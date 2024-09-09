@@ -9,7 +9,7 @@ const { createAddress, getAllAddress, getAddressById, deleteAddressById, updateA
 const { createCartData, getAllCartData, getCartDataById, updateCartDataById, updateCartQuantityById, deleteCartDataById } = require('../controller/cartController');
 const { createRating, getAllRatings, getRatingDataById, updateRatingDataById, deleteRatingDataById } = require('../controller/ratingController');
 const { createCoupen, getAllCoupens, getCoupenById, updateCoupenById, updateCoupenStatusById, deleteCoupenById } = require('../controller/coupenContoller');
-const { createOrder, getAllOrders, getOrderById, updateOrderById } = require('../controller/orderController');
+const { createOrder, getAllOrders, getOrderById, updateOrderById, deleteOrderById } = require('../controller/orderController');
 
 const indexRoutes = express.Router();
 
@@ -94,5 +94,5 @@ indexRoutes.post('/createOrder', createOrder)
 indexRoutes.get('/allOrders', getAllOrders)
 indexRoutes.get('/getOrder/:id', getOrderById)
 indexRoutes.put('/updateOrder/:id', updateOrderById);
-
+indexRoutes.delete('/deleteOrder/:id', deleteOrderById);
 module.exports = indexRoutes;
