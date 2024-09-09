@@ -135,6 +135,10 @@ exports.updateUserById = async (req, res) => {
         if (req.file) {
             req.body.image = req.file.path
         }
+        if (req.body.password) {
+            const salt = await bcrypt.genSalt(10)
+            req.body.password = await bcrypt.hash(req.body.password, salt)
+        }
 
         updateUserId = await user.findByIdAndUpdate(id, { ...req.body }, { new: true });
 

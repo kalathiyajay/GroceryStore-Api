@@ -4,6 +4,10 @@ const categorySchema = monogose.Schema({
     categoryName: {
         type: String,
         required: true
+    },
+    categoryImage: {
+        type: String,
+        required: true
     }
 }, {
     timestamps: true,

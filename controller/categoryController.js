@@ -2,7 +2,7 @@ const category = require('../models/categoryModels')
 
 exports.createCategory = async (req, res) => {
     try {
-        let { categoryName } = req.body
+        let { categoryName, categoryImage } = req.body
 
         let existCategory = await category.findOne({ categoryName })
 
@@ -10,8 +10,13 @@ exports.createCategory = async (req, res) => {
             return res.status(404).json({ status: 404, message: "category Already added..." })
         }
 
+        if (!req.file) {
+            return res.status(401).json({ status: 401, message: "Category Image is Required" })
+        }
+
         existCategory = await category.create({
-            categoryName
+            categoryName,
+            categoryImage: req.file.path
         });
 
         return res.status(201).json({ status: 201, message: "category Created SuccessFully...", category: existCategory })
@@ -83,6 +88,10 @@ exports.updateCategoryById = async (req, res) => {
             return res.status(404).json({ status: 404, message: "Category Not Found" })
         }
 
+        if (req.file) {
+            req.body.categoryImage = req.file.path
+        }
+        
         updateCategoryId = await category.findByIdAndUpdate(id, { ...req.body }, { new: true });
 
         return res.status(200).json({ status: 200, message: "Category Updated SuccessFully...", category: updateCategoryId })

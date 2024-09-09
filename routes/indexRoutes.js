@@ -3,15 +3,20 @@ const { createAdminUser, createUser, getAllUsers, getUserById, updateUserById, d
 const upload = require('../helper/imageUplode');
 const { createCategory, getAllCategories, getCategoryById, updateCategoryById, deleteCategoryById } = require('../controller/categoryController');
 const { createSubCategory, getAllSubCategory, getSubCategoryById, updateSubCategoryById, deleteSubCategoryById } = require('../controller/subCategoryController');
-const { createProduct, getAllProduct, getProductById, updateProductById, deleteProductById, updateProductImage } = require('../controller/productContoller');
+const { createProduct, getAllProduct, getProductById, updateProductById, deleteProductById } = require('../controller/productContoller');
 const { createWishList, getAllWishList, getWishListById, deleteWishListById } = require('../controller/wishListController');
 const { createAddress, getAllAddress, getAddressById, deleteAddressById, updateAddressById } = require('../controller/addressController');
 const { createCartData, getAllCartData, getCartDataById, updateCartDataById, updateCartQuantityById, deleteCartDataById } = require('../controller/cartController');
 const { createRating, getAllRatings, getRatingDataById, updateRatingDataById, deleteRatingDataById } = require('../controller/ratingController');
 const { createCoupen, getAllCoupens, getCoupenById, updateCoupenById, updateCoupenStatusById, deleteCoupenById } = require('../controller/coupenContoller');
-const { createOrder, getAllOrders, getOrderById, updateOrderById, deleteOrderById } = require('../controller/orderController');
+const { createOrder, getAllOrders, getOrderById, updateOrderById, deleteOrderById, getMyOrders, changeOrderStatusById } = require('../controller/orderController');
+const { userLogin } = require('../auth/login');
 
 const indexRoutes = express.Router();
+
+// login
+
+indexRoutes.post('/login', userLogin)
 
 // User Routes
 
@@ -24,10 +29,10 @@ indexRoutes.delete('/deleteUser/:id', deleteUserById);
 
 // category routes
 
-indexRoutes.post('/createCategory', createCategory);
+indexRoutes.post('/createCategory', upload.single('categoryImage'), createCategory);
 indexRoutes.get('/AllCategory', getAllCategories);
 indexRoutes.get('/getCategory/:id', getCategoryById);
-indexRoutes.put('/updateCategory/:id', updateCategoryById);
+indexRoutes.put('/updateCategory/:id', upload.single('categoryImage'), updateCategoryById);
 indexRoutes.delete('/deleteCategory/:id', deleteCategoryById);
 
 // Sub Category Routes
@@ -95,4 +100,7 @@ indexRoutes.get('/allOrders', getAllOrders)
 indexRoutes.get('/getOrder/:id', getOrderById)
 indexRoutes.put('/updateOrder/:id', updateOrderById);
 indexRoutes.delete('/deleteOrder/:id', deleteOrderById);
-module.exports = indexRoutes;
+indexRoutes.get('/getMyOrder/:id', getMyOrders)
+indexRoutes.put('/changeOrderStatus/:id', changeOrderStatusById);
+
+module.exports = indexRoutes; 

@@ -5,7 +5,7 @@ const coupen = require('../models/couponModels')
 
 exports.createOrder = async (req, res) => {
     try {
-        let { userId, orderItems, productId, quantity, address, coupenId, paymentMethod, status, subTotal, discount, handalingCharge, deliveryCharge, totalAmount = 0, } = req.body
+        let { userId, orderItems, productId, quantity, address, coupenId, paymentMethod, status, subTotal, discount, totalAmount = 0, } = req.body
 
         orderItems = await cart.find({ userId: userId })
 
@@ -17,7 +17,6 @@ exports.createOrder = async (req, res) => {
 
         if (coupenId) {
             coupens = await coupen.findById(coupenId)
-            console.log("coupen", coupens);
             if (!coupens) {
                 return res.status(404).json({ status: 404, messsage: "Coupen Not Found" })
             }
@@ -27,12 +26,11 @@ exports.createOrder = async (req, res) => {
             }
 
             discount = coupens.coupenDiscount
-            console.log("Coupen_discount", discount);
         }
 
         for (let item of orderItems) {
+
             const products = await product.findById(item.productId)
-            console.log(products);
             if (!products) {
                 return res.status(404).json({ status: 404, message: "Product Not Found" })
             }
@@ -40,15 +38,11 @@ exports.createOrder = async (req, res) => {
             totalAmount += products.price * item.quantity
         }
 
-        subTotal = totalAmount + handalingCharge + deliveryCharge;
+        subTotal = totalAmount
 
         const discountAmount = (totalAmount * (discount / 100))
 
-        console.log("discountAmount", discountAmount);
-
-        totalAmount -= discountAmount - handalingCharge - deliveryCharge
-
-        console.log("TotalAmount", totalAmount);
+        totalAmount -= discountAmount
 
         cartItmems = await order.create({
             userId,
@@ -57,10 +51,8 @@ exports.createOrder = async (req, res) => {
             paymentMethod,
             coupenId,
             discount: discountAmount,
-            status: "shipped",
+            status: "pending",
             subTotal,
-            handalingCharge,
-            deliveryCharge,
             totalAmount,
         });
 
@@ -69,7 +61,7 @@ exports.createOrder = async (req, res) => {
             await coupens.save();
         }
 
-        // await cart.deleteMany({ userId: userId });
+        await cart.deleteMany({ userId: userId });
 
         return res.status(201).json({ status: 201, message: "Order Create SuccessFully...", order: cartItmems });
 
@@ -163,7 +155,7 @@ exports.updateOrderById = async (req, res) => {
 
         }
 
-        let subTotal = totalAmount + (req.body.handalingCharge || 0) + (req.body.deliveryCharge || 0);
+        let subTotal = totalAmount
 
         updateOrderId.subTotal = subTotal
 
@@ -171,7 +163,7 @@ exports.updateOrderById = async (req, res) => {
 
         updateOrderId.discount = discountAmount
 
-        totalAmount -= discountAmount - (req.body.handalingCharge || 0) - (req.body.deliveryCharge || 0)
+        totalAmount -= discountAmount
 
         updateOrderId.totalAmount = totalAmount
 
@@ -201,6 +193,44 @@ exports.deleteOrderById = async (req, res) => {
         await order.findByIdAndDelete(id)
 
         return res.status(200).json({ status: 200, message: "Order Delete SuccessFully...." })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
+exports.getMyOrders = async (req, res) => {
+    try {
+        let id = req.params.id
+
+        let checkUserId = await order.find({ userId: id })
+
+        if (!checkUserId) {
+            return res.status(404).json({ status: 404, message: "Order Not Found" })
+        }
+
+        return res.status(200).json({ status: 200, message: "Order Found SuccessFully...", orders: checkUserId })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
+exports.changeOrderStatusById = async (req, res) => {
+    try {
+        let id = req.params.id
+
+        let changeOrderStatusId = await order.findById(id)
+
+        if (!changeOrderStatusId) {
+            return res.status(404).json({ status: 404, message: "Order Not Found" })
+        }
+
+        changeOrderStatusId = await order.findByIdAndUpdate(id, { ...req.body }, { new: true });
+
+        return res.status(200).json({ status: 200, message: "Order Status Updated SuccessFully...", order: changeOrderStatusId })
 
     } catch (error) {
         console.log(error)

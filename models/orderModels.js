@@ -26,8 +26,8 @@ const orderSchema = mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['cash', 'debit'],
-        default: 'cash'
+        enum: ['cod', 'netBanking'],
+        default: 'cod'
     },
     coupenId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -43,14 +43,6 @@ const orderSchema = mongoose.Schema({
         default: 'pending',
     },
     discount: {
-        type: Number,
-        default: 0
-    },
-    handalingCharge: {
-        type: Number,
-        default: 0
-    },
-    deliveryCharge: {
         type: Number,
         default: 0
     },
