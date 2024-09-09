@@ -5,9 +5,9 @@ const coupen = require('../models/couponModels')
 
 exports.createOrder = async (req, res) => {
     try {
-        let { userId, orderItems, productId, quantity, address, coupenId, paymentMethod, status, subTotal, discount, totalAmount = 0, } = req.body
+        let { orderItems, productId, quantity, address, coupenId, paymentMethod, status, subTotal, discount, totalAmount = 0, } = req.body
 
-        orderItems = await cart.find({ userId: userId })
+        orderItems = await cart.find({ userId: userId })// userId: req.user._id
 
         if (!orderItems) {
             return res.status(404).json({ status: 404, message: "Cart Item Not Found" })
@@ -45,7 +45,7 @@ exports.createOrder = async (req, res) => {
         totalAmount -= discountAmount
 
         cartItmems = await order.create({
-            userId,
+            userId,// userId: req.user._id
             orderItems,
             address,
             paymentMethod,
@@ -61,7 +61,7 @@ exports.createOrder = async (req, res) => {
             await coupens.save();
         }
 
-        await cart.deleteMany({ userId: userId });
+        await cart.deleteMany({ userId: userId });//userId: req.user._id
 
         return res.status(201).json({ status: 201, message: "Order Create SuccessFully...", order: cartItmems });
 
@@ -82,7 +82,7 @@ exports.getAllOrders = async (req, res) => {
 
         let paginatedOrdersData;
 
-        paginatedOrdersData = await order.find()
+        paginatedOrdersData = await order.find()//userId: req.user._id
 
         let count = paginatedOrdersData.length
 
@@ -204,7 +204,7 @@ exports.getMyOrders = async (req, res) => {
     try {
         let id = req.params.id
 
-        let checkUserId = await order.find({ userId: id })
+        let checkUserId = await order.find({ userId: id })//userId: req.user._id 
 
         if (!checkUserId) {
             return res.status(404).json({ status: 404, message: "Order Not Found" })
@@ -231,6 +231,32 @@ exports.changeOrderStatusById = async (req, res) => {
         changeOrderStatusId = await order.findByIdAndUpdate(id, { ...req.body }, { new: true });
 
         return res.status(200).json({ status: 200, message: "Order Status Updated SuccessFully...", order: changeOrderStatusId })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
+exports.cancelOrder = async (req, res) => {
+    try {
+        let id = req.params.id
+
+        let { reason } = req.body;
+
+        let checkOrder = await order.findById(id)
+
+        if (!checkOrder) {
+            return res.status(404).json({ status: 404, message: "Order Not Found" })
+        }
+
+        checkOrder.status = "canceled"
+
+        checkOrder.reason = reason
+
+        checkOrder.save();
+
+        return res.status(200).json({ status: 200, message: "Order Canceled SuccessFully...", order: checkOrder })
 
     } catch (error) {
         console.log(error)

@@ -2,16 +2,16 @@ const cart = require('../models/cartModels')
 
 exports.createCartData = async (req, res) => {
     try {
-        let { userId, productId, quantity } = req.body
+        let { productId, quantity } = req.body
 
-        let existCartData = await cart.findOne({ userId, productId })
+        let existCartData = await cart.findOne({ userId, productId })//userId: req.user._id, productId
 
         if (existCartData) {
             return res.status(409).json({ status: 409, message: "Cart Data Alredy Added..." })
         }
 
         existCartData = await cart.create({
-            userId,
+            userId,//userId: req.user._id,
             productId,
             quantity
         })
@@ -35,7 +35,7 @@ exports.getAllCartData = async (req, res) => {
 
         let paginatedCartData;
 
-        paginatedCartData = await cart.find();
+        paginatedCartData = await cart.find();//userId: req.user._id
 
         let count = paginatedCartData.length
 

@@ -4,14 +4,14 @@ exports.createWishList = async (req, res) => {
     try {
         let { userId, productId } = req.body
 
-        let existWishList = await wishList.findOne({ userId, productId })
+        let existWishList = await wishList.findOne({ userId, productId })//userId:req.user._id, productId 
 
         if (existWishList) {
             return res.status(409).json({ status: 409, message: "WishList Alredy Added..." })
         }
 
         existWishList = await wishList.create({
-            userId,
+            userId,//userId: req.user._id
             productId
         });
 
@@ -34,7 +34,7 @@ exports.getAllWishList = async (req, res) => {
 
         let paginatedWishList;
 
-        paginatedWishList = await wishList.find()
+        paginatedWishList = await wishList.find()//userId: req.user._id 
 
         let count = paginatedWishList.length
 

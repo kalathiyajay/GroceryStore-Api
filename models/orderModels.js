@@ -49,6 +49,10 @@ const orderSchema = mongoose.Schema({
     subTotal: {
         type: Number,
         default: 0
+    },
+    reason: {
+        type: String,
+        require: true
     }
 }, {
     timestamps: true,
