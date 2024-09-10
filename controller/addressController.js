@@ -69,6 +69,7 @@ exports.getAddressById = async (req, res) => {
         return res.status(500).json({ status: 500, message: error.message })
     }
 }
+
 exports.updateAddressById = async (req, res) => {
     try {
         let id = req.params.id
@@ -88,6 +89,7 @@ exports.updateAddressById = async (req, res) => {
         return res.status(500).json({ status: 500, message: error.message })
     }
 }
+
 exports.deleteAddressById = async (req, res) => {
     try {
         let id = req.params.id
