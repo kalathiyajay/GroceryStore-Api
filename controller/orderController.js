@@ -5,9 +5,9 @@ const coupen = require('../models/couponModels')
 
 exports.createOrder = async (req, res) => {
     try {
-        let { orderItems, productId, quantity, address, coupenId, paymentMethod, status, subTotal, discount, totalAmount = 0, } = req.body
+        let { userId, orderItems, productId, quantity, address, coupenId, paymentMethod, status, subTotal, discount, totalAmount = 0, } = req.body
 
-        orderItems = await cart.find({ userId: userId })// userId: req.user._id
+        orderItems = await cart.find({ userId: userId })
 
         if (!orderItems) {
             return res.status(404).json({ status: 404, message: "Cart Item Not Found" })
@@ -45,7 +45,7 @@ exports.createOrder = async (req, res) => {
         totalAmount -= discountAmount
 
         cartItmems = await order.create({
-            userId,// userId: req.user._id
+            userId,
             orderItems,
             address,
             paymentMethod,
@@ -61,7 +61,7 @@ exports.createOrder = async (req, res) => {
             await coupens.save();
         }
 
-        await cart.deleteMany({ userId: userId });//userId: req.user._id
+        await cart.deleteMany({ userId: userId });
 
         return res.status(201).json({ status: 201, message: "Order Create SuccessFully...", order: cartItmems });
 
@@ -82,7 +82,7 @@ exports.getAllOrders = async (req, res) => {
 
         let paginatedOrdersData;
 
-        paginatedOrdersData = await order.find()//userId: req.user._id
+        paginatedOrdersData = await order.find()
 
         let count = paginatedOrdersData.length
 
@@ -204,7 +204,7 @@ exports.getMyOrders = async (req, res) => {
     try {
         let id = req.params.id
 
-        let checkUserId = await order.find({ userId: id })//userId: req.user._id 
+        let checkUserId = await order.find({ userId: id })
 
         if (!checkUserId) {
             return res.status(404).json({ status: 404, message: "Order Not Found" })

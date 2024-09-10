@@ -4,18 +4,18 @@ exports.createWishList = async (req, res) => {
     try {
         let { userId, productId } = req.body
 
-        let existWishList = await wishList.findOne({ userId, productId })//userId:req.user._id, productId 
+        let existWishList = await wishList.findOne({ userId, productId })
 
         if (existWishList) {
             return res.status(409).json({ status: 409, message: "WishList Alredy Added..." })
         }
 
         existWishList = await wishList.create({
-            userId,//userId: req.user._id
+            userId,
             productId
         });
 
-        return res.status(201).json({ status: 201, message: "Wish list Created SuccessFully...", wishList: existWishList })
+        return res.status(201).json({ status: 201, message: "WishList Created SuccessFully...", wishList: existWishList })
 
     } catch (error) {
         console.log(error)
@@ -34,8 +34,7 @@ exports.getAllWishList = async (req, res) => {
 
         let paginatedWishList;
 
-        paginatedWishList = await wishList.find()//userId: req.user._id 
-
+        paginatedWishList = await wishList.find()
         let count = paginatedWishList.length
 
         if (count === 0) {
@@ -48,7 +47,7 @@ exports.getAllWishList = async (req, res) => {
             paginatedWishList = await paginatedWishList.slice(startIndex, lastIndex)
         }
 
-        return res.status(200).json({ status: 200, totalWishList: count, message: "All Wish List Found SuccessFully...", wishList: paginatedWishList })
+        return res.status(200).json({ status: 200, totalWishList: count, message: "All WishList Found SuccessFully...", wishList: paginatedWishList })
 
     } catch (error) {
         console.log(error)
