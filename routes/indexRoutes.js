@@ -11,6 +11,7 @@ const { createRating, getAllRatings, getRatingDataById, updateRatingDataById, de
 const { createCoupen, getAllCoupens, getCoupenById, updateCoupenById, updateCoupenStatusById, deleteCoupenById } = require('../controller/coupenContoller');
 const { createOrder, getAllOrders, getOrderById, updateOrderById, deleteOrderById, getMyOrders, changeOrderStatusById } = require('../controller/orderController');
 const { userLogin } = require('../auth/login');
+const { createPayment, getAllPayments, getPaymentById, updatePaymentById, deletePaymentById, updatePaymentStatusById } = require('../controller/paymentController');
 
 const indexRoutes = express.Router();
 
@@ -66,7 +67,6 @@ indexRoutes.get('/getAddress/:id', getAddressById);
 indexRoutes.put('/updateAddress/:id', updateAddressById)
 indexRoutes.delete('/deleteAddress/:id', deleteAddressById);
 
-
 // Cart Routes
 
 indexRoutes.post('/addToCart', createCartData);
@@ -102,5 +102,14 @@ indexRoutes.put('/updateOrder/:id', updateOrderById);
 indexRoutes.delete('/deleteOrder/:id', deleteOrderById);
 indexRoutes.get('/getMyOrder/:id', getMyOrders)
 indexRoutes.put('/changeOrderStatus/:id', changeOrderStatusById);
+
+// Payment Routes
+
+indexRoutes.post('/createPayment', createPayment);
+indexRoutes.get('/allPayment', getAllPayments);
+indexRoutes.get('/getPayment/:id', getPaymentById);
+indexRoutes.put('/updatePayment/:id', updatePaymentById);
+indexRoutes.put('/updatePaymentStatus/:id', updatePaymentStatusById);
+indexRoutes.delete('/deletePayment/:id', deletePaymentById)
 
 module.exports = indexRoutes; 
