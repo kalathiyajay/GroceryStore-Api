@@ -5,6 +5,7 @@ const SubCategory = require('../models/subCategoryModels');
 const Order = require('../models/orderModels');
 const Product = require('../models/productModels');
 const specialDeals = require('../models/specialDealsModels');
+const jwt = require('jsonwebtoken')
 
 exports.createAdminUser = async (req, res) => {
     try {
@@ -248,24 +249,26 @@ let fixOtp = 1234
 
 exports.loginWithMobileNo = async (req, res) => {
     try {
-        let { mobileNo } = req.body
+        const { mobileNo } = req.body;
 
-        let userMobileNo = await user.findOne({ mobileNo })
-
-        if (userMobileNo) {
-            return res.status(409).json({ status: 409, success: false, message: "Mobile No Alredy Exist" })
+        if (!mobileNo) {
+            return res.status(400).json({ status: 400, success: false, message: "Mobile No Is Required" });
         }
 
-        userMobileNo = await user.create({
-            mobileNo
-        });
+        let userMobileNo = await user.findOne({ mobileNo });
 
-        return res.status(200).json({ status: 200, success: true, message: "Otp Sent SuccessFully...", otp: fixOtp })
+        if (!userMobileNo) {
+            userMobileNo = await user.create({
+                mobileNo
+            });
+        }
+
+        return res.status(200).json({ status: 200, success: true, message: "OTP Sent Successfully...", otp: fixOtp });
 
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ status: 500, success: false, message: error.message })
-    }
+        console.log(error);
+        return res.status(500).json({ status: 500, success: false, message: error.message });
+    } 
 }
 
 exports.verifyOtp = async (req, res) => {
@@ -282,7 +285,9 @@ exports.verifyOtp = async (req, res) => {
             return res.status(401).json({ status: 401, success: false, message: "Invalid Otp" })
         }
 
-        return res.status(200).json({ status: 200, success: true, message: "Login SuccessFully..." });
+        let token = jwt.sign({ _id: checMobileNo._id }, process.env.SECRET_KEY, { expiresIn: '1D' })
+
+        return res.status(200).json({ status: 200, success: true, message: "Login SuccessFully...", token: token });
 
     } catch (error) {
         console.log(error)
