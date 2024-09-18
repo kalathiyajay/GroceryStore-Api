@@ -1,5 +1,10 @@
 const user = require('../models/user.models')
 const bcrypt = require('bcrypt')
+const Category = require('../models/categoryModels');
+const SubCategory = require('../models/subCategoryModels');
+const Order = require('../models/orderModels');
+const Product = require('../models/productModels');
+const specialDeals = require('../models/specialDealsModels');
 
 exports.createAdminUser = async (req, res) => {
     try {
@@ -135,7 +140,7 @@ exports.updateUserById = async (req, res) => {
         if (req.file) {
             req.body.image = req.file.path
         }
-        
+
         if (req.body.password) {
             const salt = await bcrypt.genSalt(10)
             req.body.password = await bcrypt.hash(req.body.password, salt)
@@ -168,5 +173,111 @@ exports.deleteUserById = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
+exports.dashBoard = async (req, res) => {
+    try {
+        const categories = await Category.find()
+
+        const subCategories = await SubCategory.find()
+
+        const SpecialDeals = await specialDeals.find();
+
+        const orders = await Order.find().populate('orderItems.productId')
+
+        const productSales = {};
+
+        orders.forEach(order => {
+            order.orderItems.forEach(item => {
+                const { productId, quantity } = item;
+                if (!productSales[productId._id]) {
+                    productSales[productId._id] = { product: productId, totalQuantity: 0 };
+                }
+                productSales[productId._id].totalQuantity += quantity;
+            });
+        });
+
+        const bestSellers = Object.values(productSales)
+            .sort((a, b) => b.totalQuantity - a.totalQuantity)
+            .slice(0, 10);
+
+
+        const productIds = bestSellers.map(seller => seller.product._id);
+        const products = await Product.find({ _id: { $in: productIds } }).exec();
+
+        const bestSellingProducts = products.map(product => {
+            const salesData = bestSellers.find(seller => seller.product._id.toString() === product._id.toString());
+            return {
+                productId: product._id,
+                productName: product.productName,
+                totalQuantity: salesData.totalQuantity,
+                sales: product.sales
+            };
+        });
+
+        const groceriesCategory = categories.find(cat => cat.categoryName.toLowerCase() === 'groceries');
+
+        const groceriesProducts = groceriesCategory ? await Product.find({ categoryId: groceriesCategory._id }).exec() : [];
+
+        const freshFruitsSubCategory = subCategories.find(subCat => subCat.subCategoryName.toLowerCase() === 'fresh fruits');
+
+        const freshFruitsProducts = freshFruitsSubCategory ? await Product.find({ subCategoryId: freshFruitsSubCategory._id }).exec() : [];
+
+        const freshVegetablesSubCategory = subCategories.find(subCat => subCat.subCategoryName.toLowerCase() === 'fresh vegitables');
+
+        const freshVegetablesProducts = freshVegetablesSubCategory ? await Product.find({ subCategoryId: freshVegetablesSubCategory._id }).exec() : [];
+
+        const categorizedData = {
+            vegetablesAndFruits: categories,
+            groceries: groceriesProducts,
+            SpecialDeals,
+            bestSeller: bestSellingProducts,
+            freshVegetables: freshVegetablesProducts,
+            freshFruits: freshFruitsProducts
+        };
+
+        return res.status(200).json({ status: 200, status: true, message: "DashBoard Data Found SuccessFully....", data: categorizedData });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
+let fixOtp = 1234
+
+exports.loginWithMobileNo = async (req, res) => {
+    try {
+        let { mobileNo } = req.body
+
+        if (!mobileNo) {
+            return res.status(401).json({ status: 401, success: false, message: "Mobile No Is Required" })
+        }
+
+        return res.status(200).json({ status: 200, success: true, message: "Otp Sent SuccessFully...", otp: fixOtp })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, success: false, message: error.message })
+    }
+}
+
+exports.verifyOtp = async (req, res) => {
+    try {
+        let { mobileNo, otp } = req.body
+
+        if (!mobileNo) {
+            return res.status(401).json({ status: 401, success: false, message: "Mobile No Is Required" })
+        }
+
+        if (otp !== fixOtp) {
+            return res.status(401).json({ status: 401, success: false, message: "Invalid Otp" })
+        }
+
+        return res.status(200).json({ status: 200, success: true, message: "Login SuccessFully..." });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }

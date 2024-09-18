@@ -1,5 +1,5 @@
 const express = require('express');
-const { createAdminUser, createUser, getAllUsers, getUserById, updateUserById, deleteUserById } = require('../controller/userController');
+const { createAdminUser, createUser, getAllUsers, getUserById, updateUserById, deleteUserById, dashBoard, loginWithMobileNo, verifyOtp } = require('../controller/userController');
 const upload = require('../helper/imageUplode');
 const { createCategory, getAllCategories, getCategoryById, updateCategoryById, deleteCategoryById } = require('../controller/categoryController');
 const { createSubCategory, getAllSubCategory, getSubCategoryById, updateSubCategoryById, deleteSubCategoryById } = require('../controller/subCategoryController');
@@ -12,6 +12,7 @@ const { createCoupen, getAllCoupens, getCoupenById, updateCoupenById, updateCoup
 const { createOrder, getAllOrders, getOrderById, updateOrderById, deleteOrderById, getMyOrders, changeOrderStatusById, cancelOrder } = require('../controller/orderController');
 const { userLogin } = require('../auth/login');
 const { auth } = require('../helper/authToken');
+const { createSpecialDeals, getAllSpecialDeals, getSpecialDealById, updateSpecialDealById, deleteSpecialDealById } = require('../controller/specialDealsController');
 
 const indexRoutes = express.Router();
 
@@ -27,6 +28,7 @@ indexRoutes.get('/allUsers', getAllUsers)
 indexRoutes.get('/getUser/:id', getUserById);
 indexRoutes.put('/updateUser/:id', auth(['admin', 'user']), upload.single('image'), updateUserById)
 indexRoutes.delete('/deleteUser/:id', auth(['admin', 'user']), deleteUserById);
+indexRoutes.get('/dashBoard', dashBoard);
 
 // category routes 
 
@@ -105,5 +107,18 @@ indexRoutes.delete('/deleteOrder/:id', auth(['admin']), deleteOrderById);
 indexRoutes.get('/getMyOrder/:id', auth(['user']), getMyOrders)
 indexRoutes.put('/changeOrderStatus/:id', auth(['admin']), changeOrderStatusById);
 indexRoutes.put('/cancelOrder/:id', auth(['admin', 'user']), cancelOrder);
+
+// Special Deals Routes
+
+indexRoutes.post('/createSpecialDeal', upload.single('dealsImage'), createSpecialDeals);
+indexRoutes.get('/allSpecialDeal', getAllSpecialDeals);
+indexRoutes.get('/getSpecialDeal/:id', getSpecialDealById)
+indexRoutes.put('/updateSpecialDeal/:id', upload.single('dealsImage'), updateSpecialDealById);
+indexRoutes.delete('/deleteSpecialDeal/:id', deleteSpecialDealById);
+
+// Login With Mobile No
+
+indexRoutes.post('/mobileNoLogin', loginWithMobileNo);
+indexRoutes.post('/verifyOtp', verifyOtp);
 
 module.exports = indexRoutes;   
