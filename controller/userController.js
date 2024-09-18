@@ -250,9 +250,15 @@ exports.loginWithMobileNo = async (req, res) => {
     try {
         let { mobileNo } = req.body
 
-        if (!mobileNo) {
-            return res.status(401).json({ status: 401, success: false, message: "Mobile No Is Required" })
+        let userMobileNo = await user.findOne({ mobileNo })
+
+        if (userMobileNo) {
+            return res.status(409).json({ status: 409, success: false, message: "Mobile No Alredy Exist" })
         }
+
+        userMobileNo = await user.create({
+            mobileNo
+        });
 
         return res.status(200).json({ status: 200, success: true, message: "Otp Sent SuccessFully...", otp: fixOtp })
 
@@ -266,8 +272,10 @@ exports.verifyOtp = async (req, res) => {
     try {
         let { mobileNo, otp } = req.body
 
-        if (!mobileNo) {
-            return res.status(401).json({ status: 401, success: false, message: "Mobile No Is Required" })
+        let checMobileNo = await user.findOne({ mobileNo })
+
+        if (!checMobileNo) {
+            return res.status(401).json({ status: 401, success: false, message: "MobileNo Not Found" })
         }
 
         if (otp !== fixOtp) {
