@@ -7,7 +7,7 @@ exports.createWishList = async (req, res) => {
         let existWishList = await wishList.findOne({ userId, productId })
 
         if (existWishList) {
-            return res.status(409).json({ status: 409, message: "WishList Alredy Added..." })
+            return res.status(409).json({ status: 409, success: false, message: "WishList Alredy Added..." })
         }
 
         existWishList = await wishList.create({
@@ -15,11 +15,11 @@ exports.createWishList = async (req, res) => {
             productId
         });
 
-        return res.status(201).json({ status: 201, message: "WishList Created SuccessFully...", wishList: existWishList })
+        return res.status(201).json({ status: 201, success: true, message: "WishList Created SuccessFully...", data: existWishList })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -29,7 +29,7 @@ exports.getAllWishList = async (req, res) => {
         let pageSize = parseInt(req.query.pageSize)
 
         if (page < 1 || pageSize < 1) {
-            return res.status(401).json({ status: 401, message: "Page And PageSize Cann't Be Less Than 1" })
+            return res.status(401).json({ status: 401, success: false, message: "Page And PageSize Cann't Be Less Than 1" })
         }
 
         let paginatedWishList;
@@ -38,7 +38,7 @@ exports.getAllWishList = async (req, res) => {
         let count = paginatedWishList.length
 
         if (count === 0) {
-            return res.status(404).json({ status: 404, message: "WishList Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "WishList Not Found" })
         }
 
         if (page && pageSize) {
@@ -47,11 +47,11 @@ exports.getAllWishList = async (req, res) => {
             paginatedWishList = await paginatedWishList.slice(startIndex, lastIndex)
         }
 
-        return res.status(200).json({ status: 200, totalWishList: count, message: "All WishList Found SuccessFully...", wishList: paginatedWishList })
+        return res.status(200).json({ status: 200, success: true, totalWishList: count, message: "All WishList Found SuccessFully...", data: paginatedWishList })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -62,14 +62,14 @@ exports.getWishListById = async (req, res) => {
         let getWishListId = await wishList.findById(id)
 
         if (!getWishListId) {
-            return res.status(404).json({ status: 404, message: "WishList Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "WishList Not Found" })
         }
 
-        return res.status(200).json({ status: 200, message: "WishList Found SuccessFully...", wishList: getWishListId })
+        return res.status(200).json({ status: 200, success: true, message: "WishList Found SuccessFully...", data: getWishListId })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -80,15 +80,15 @@ exports.deleteWishListById = async (req, res) => {
         let deleteWishListId = await wishList.findById(id)
 
         if (!deleteWishListId) {
-            return res.status(404).json({ status: 404, message: "WishList Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "WishList Not Found" })
         }
 
         await wishList.findByIdAndDelete(id)
 
-        return res.status(200).json({ status: 200, message: "WishList Delete SuccessFully..." })
+        return res.status(200).json({ status: 200, success: true, message: "WishList Delete SuccessFully..." })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }

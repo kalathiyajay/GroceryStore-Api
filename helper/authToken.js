@@ -8,9 +8,9 @@ exports.auth = (roles = []) => {
         if (authorization) {
             try {
                 let token = await authorization.split(' ')[1]
-                
+
                 if (!token) {
-                    return res.status(404).json({ status: 404, message: "Token Is Required" })
+                    return res.status(404).json({ status: 404, success: false, message: "Token Is Required" })
                 }
 
                 let checkToken = jwt.verify(token, process.env.SECRET_KEY)
@@ -20,22 +20,22 @@ exports.auth = (roles = []) => {
                 req.user = checkUser;
 
                 if (!checkUser) {
-                    return res.status(404).json({ status: 404, message: "User Not Found" })
+                    return res.status(404).json({ status: 404, success: false, message: "User Not Found" })
                 }
 
                 if (!roles.includes(checkUser.role)) {
-                    return res.status(404).json({ status: 404, message: "Unauthorize Access" })
+                    return res.status(404).json({ status: 404, success: false, message: "Unauthorize Access" })
                 }
 
                 next();
 
             } catch (error) {
                 console.log(error);
-                return res.status(500).json({ status: 500, message: error.message })
+                return res.status(500).json({ status: 500, success: false, message: error.message })
             }
         }
         else {
-            return res.status(500).json({ status: 500, message: "Authorization Token Is Require" })
+            return res.status(500).json({ status: 500, success: false, message: "Authorization Token Is Require" })
         }
     }
 } 

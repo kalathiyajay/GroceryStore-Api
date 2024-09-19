@@ -9,21 +9,21 @@ exports.userLogin = async (req, res) => {
         let checkUser = await user.findOne({ email })
 
         if (!checkUser) {
-            return res.status(404).json({ status: 404, message: "User Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "User Not Found" })
         }
 
         let checkPassword = await bcrypt.compare(password, checkUser.password)
 
         if (!checkPassword) {
-            return res.status(404).json({ status: 404, message: "Invalid Password" })
+            return res.status(404).json({ status: 404, success: false, message: "Invalid Password" })
         }
 
         let token = jwt.sign({ _id: checkUser._id }, process.env.SECRET_KEY, { expiresIn: '1D' })
 
-        return res.status(200).json({ status: 200, message: "User Login SuccessFully....", user: checkUser, token: token });
+        return res.status(200).json({ status: 200, success: true, message: "User Login SuccessFully....", data: checkUser, token: token });
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }

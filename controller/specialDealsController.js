@@ -21,7 +21,7 @@ exports.createSpecialDeals = async (req, res) => {
             discount
         });
 
-        return res.status(201).json({ status: 201, success: true, message: "SpecialDeal Create SuccessFully...", specialDeals: existSpecialDeals })
+        return res.status(201).json({ status: 201, success: true, message: "SpecialDeal Create SuccessFully...", data: existSpecialDeals })
 
     } catch (error) {
         console.log(error)
@@ -54,11 +54,11 @@ exports.getAllSpecialDeals = async (req, res) => {
             paginatedSpecialDeals = await paginatedSpecialDeals.slice(startIndex, lastIndex)
         }
 
-        return res.status(201).json({ status: 201, success: true, totalSpecialDeals: count, message: "All Special Deals Found SuccessFully...", specialDeals: paginatedSpecialDeals })
+        return res.status(201).json({ status: 201, success: true, totalSpecialDeals: count, message: "All Special Deals Found SuccessFully...", data: paginatedSpecialDeals })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -72,7 +72,7 @@ exports.getSpecialDealById = async (req, res) => {
             return res.status(404).json({ status: 404, success: false, message: "Special Deal Not Found" })
         }
 
-        return res.status(200).json({ status: 200, success: true, message: "Special Deal Found SuccessFully...", specialDeal: getSpecialDealId })
+        return res.status(200).json({ status: 200, success: true, message: "Special Deal Found SuccessFully...", data: getSpecialDealId })
 
     } catch (error) {
         console.log(error)
@@ -96,7 +96,7 @@ exports.updateSpecialDealById = async (req, res) => {
 
         updateSpecialDealId = await specialDeals.findByIdAndUpdate(id, { ...req.body }, { new: true })
 
-        return res.status(200).json({ status: 200, success: true, message: "SpecialDeal Updated SuccessFully...", specialDeal: updateSpecialDealId });
+        return res.status(200).json({ status: 200, success: true, message: "SpecialDeal Updated SuccessFully...", data: updateSpecialDealId });
 
     } catch (error) {
         console.log(error)
@@ -117,7 +117,7 @@ exports.deleteSpecialDealById = async (req, res) => {
         await specialDeals.findByIdAndDelete(id)
 
         return res.status(200).json({ status: 200, success: true, message: "SpecialDeal Delete SuccessFully..." })
-        
+
     } catch (error) {
         console.log(error)
         return res.status(500).json({ status: 500, success: false, message: error.message })

@@ -14,11 +14,11 @@ exports.createAdminUser = async (req, res) => {
         let existName = await user.findOne({ name })
 
         if (existName) {
-            return res.status(409).json({ status: 409, message: "Name Already Exist" })
+            return res.status(409).json({ status: 409, success: false, message: "Name Already Exist" })
         }
 
         if (!req.file) {
-            return res.status(401).json({ status: 401, message: "Image File Is Required" })
+            return res.status(401).json({ status: 401, success: false, message: "Image File Is Required" })
         }
 
         const salt = await bcrypt.genSalt(10)
@@ -34,11 +34,11 @@ exports.createAdminUser = async (req, res) => {
             role: "admin"
         });
 
-        return res.status(201).json({ status: 201, message: "Admin User Created SuccessFully...", Adminuser: existName })
+        return res.status(201).json({ status: 201, success: true, message: "Admin User Created SuccessFully...", data: existName })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -49,11 +49,11 @@ exports.createUser = async (req, res) => {
         let existUserName = await user.findOne({ name })
 
         if (existUserName) {
-            return res.status(404).json({ status: 404, message: "Name Already Exist" })
+            return res.status(404).json({ status: 404, success: false, message: "Name Already Exist" })
         }
 
         if (!req.file) {
-            return res.status(401).json({ status: 401, message: "Image File Is Required" })
+            return res.status(401).json({ status: 401, success: false, message: "Image File Is Required" })
         }
 
         let salt = await bcrypt.genSalt(10)
@@ -69,11 +69,11 @@ exports.createUser = async (req, res) => {
             role: "user"
         })
 
-        return res.status(201).json({ status: 201, message: "User Create SuccessFully...", user: existUserName })
+        return res.status(201).json({ status: 201, success: true, message: "User Create SuccessFully...", data: existUserName })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -83,7 +83,7 @@ exports.getAllUsers = async (req, res) => {
         let pageSize = parseInt(req.query.pageSize)
 
         if (page < 1 || pageSize < 1) {
-            return res.status(401).json({ status: 401, message: "Page And PageSize Cann't Be Less Than 1" })
+            return res.status(401).json({ status: 401, success: false, message: "Page And PageSize Cann't Be Less Than 1" })
         }
 
         let paginatedUsers;
@@ -93,7 +93,7 @@ exports.getAllUsers = async (req, res) => {
         let count = paginatedUsers.length
 
         if (count === 0) {
-            return res.status(404).json({ status: 404, message: "User Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "User Not Found" })
         }
 
         if (page && pageSize) {
@@ -102,11 +102,11 @@ exports.getAllUsers = async (req, res) => {
             paginatedUsers = await paginatedUsers.slice(startIndex, lastIndex)
         }
 
-        return res.status(200).json({ status: 200, totalUsers: count, message: "All Users Found SuccessFully...", users: paginatedUsers })
+        return res.status(200).json({ status: 200, success: true, totalUsers: count, message: "All Users Found SuccessFully...", data: paginatedUsers })
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -117,14 +117,14 @@ exports.getUserById = async (req, res) => {
         let getUserId = await user.findById(id)
 
         if (!getUserId) {
-            return res.status(404).json({ status: 404, message: "User Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "User Not Found" })
         }
 
-        return res.status(200).json({ status: 200, message: "User Found SuccessFully...", user: getUserId });
+        return res.status(200).json({ status: 200, success: true, message: "User Found SuccessFully...", data: getUserId });
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -135,7 +135,7 @@ exports.updateUserById = async (req, res) => {
         let updateUserId = await user.findById(id)
 
         if (!updateUserId) {
-            return res.status(404).json({ status: 404, message: "User Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "User Not Found" })
         }
 
         if (req.file) {
@@ -149,11 +149,11 @@ exports.updateUserById = async (req, res) => {
 
         updateUserId = await user.findByIdAndUpdate(id, { ...req.body }, { new: true });
 
-        return res.status(200).json({ status: 200, message: "User Updated SuccessFully...", user: updateUserId })
+        return res.status(200).json({ status: 200, success: true, message: "User Updated SuccessFully...", data: updateUserId })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -164,16 +164,16 @@ exports.deleteUserById = async (req, res) => {
         let deleteUserId = await user.findById(id)
 
         if (!deleteUserId) {
-            return res.status(404).json({ status: 404, message: "User Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "User Not Found" })
         }
 
         await user.findByIdAndDelete(id)
 
-        return res.status(200).json({ status: 200, message: "User Delete SuccessFully..." })
+        return res.status(200).json({ status: 200, success: true, message: "User Delete SuccessFully..." })
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -238,10 +238,10 @@ exports.dashBoard = async (req, res) => {
             freshFruits: freshFruitsProducts
         };
 
-        return res.status(200).json({ status: 200, status: true, message: "DashBoard Data Found SuccessFully....", data: categorizedData });
+        return res.status(200).json({ status: 200, success: true, status: true, message: "DashBoard Data Found SuccessFully....", data: categorizedData });
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -252,7 +252,7 @@ exports.loginWithMobileNo = async (req, res) => {
         const { mobileNo } = req.body;
 
         if (!mobileNo) {
-            return res.status(400).json({ status: 400, success: false, message: "Mobile No Is Required" });
+            return res.status(401).json({ status: 401, success: false, message: "Mobile No Is Required" });
         }
 
         let userMobileNo = await user.findOne({ mobileNo });
@@ -261,6 +261,7 @@ exports.loginWithMobileNo = async (req, res) => {
             userMobileNo = await user.create({
                 mobileNo
             });
+            console.log(userMobileNo);
         }
 
         return res.status(200).json({ status: 200, success: true, message: "OTP Sent Successfully...", otp: fixOtp });
@@ -268,7 +269,7 @@ exports.loginWithMobileNo = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ status: 500, success: false, message: error.message });
-    } 
+    }
 }
 
 exports.verifyOtp = async (req, res) => {

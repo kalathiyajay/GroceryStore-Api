@@ -7,11 +7,11 @@ exports.createProduct = async (req, res) => {
         let existProduct = await product.findOne({ productName })
 
         if (existProduct) {
-            return res.status(409).json({ status: 409, message: "Product Already Added..." })
+            return res.status(409).json({ status: 409, success: false, message: "Product Already Added..." })
         }
 
         if (!req.files) {
-            return res.status(404).json({ status: 404, message: "Product Image Is Required" })
+            return res.status(404).json({ status: 404, success: false, message: "Product Image Is Required" })
         }
 
         const files = req.files['productImage'];
@@ -26,11 +26,11 @@ exports.createProduct = async (req, res) => {
             quantity
         });
 
-        return res.status(201).json({ status: 201, message: "Product Create SuccessFully....", product: existProduct })
+        return res.status(201).json({ status: 201, success: true, message: "Product Create SuccessFully....", data: existProduct })
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -40,7 +40,7 @@ exports.getAllProduct = async (req, res) => {
         let pageSize = parseInt(req.query.pageSize)
 
         if (page < 1 || pageSize < 1) {
-            return res.status(404).json({ status: 404, message: "Page And PageSize Cann't Be Less Than 1" })
+            return res.status(404).json({ status: 404, success: false, message: "Page And PageSize Cann't Be Less Than 1" })
         }
 
         let paginatedProduct;
@@ -50,7 +50,7 @@ exports.getAllProduct = async (req, res) => {
         let count = paginatedProduct.length
 
         if (count === 0) {
-            return res.status(404).json({ status: 404, message: "Product Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "Product Not Found" })
         }
 
         if (page && pageSize) {
@@ -59,11 +59,11 @@ exports.getAllProduct = async (req, res) => {
             paginatedProduct = await paginatedProduct.slice(startIndex, lastIndex)
         }
 
-        return res.status(200).json({ status: 200, totalProducts: count, message: "All Products Found SuccessFully...", products: paginatedProduct })
+        return res.status(200).json({ status: 200, success: true, totalProducts: count, message: "All Products Found SuccessFully...", data: paginatedProduct })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -74,14 +74,14 @@ exports.getProductById = async (req, res) => {
         let getProductId = await product.findById(id)
 
         if (!getProductId) {
-            return res.status(404).json({ status: 404, message: "Product Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "Product Not Found" })
         }
 
-        return res.status(200).json({ status: 200, message: "Product Found SuccessFully...", product: getProductId })
+        return res.status(200).json({ status: 200, success: true, message: "Product Found SuccessFully...", data: getProductId })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -92,7 +92,7 @@ exports.updateProductById = async (req, res) => {
         let updateProductId = await product.findById(id)
 
         if (!updateProductId) {
-            return res.status(404).json({ status: 404, message: "Product Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "Product Not Found" })
         }
 
         if (req.files) {
@@ -101,11 +101,11 @@ exports.updateProductById = async (req, res) => {
 
         updateProductId = await product.findByIdAndUpdate(id, { ...req.body }, { new: true });
 
-        return res.status(200).json({ status: 200, message: "Product Updated SuccessFully...", product: updateProductId })
+        return res.status(200).json({ status: 200, success: true, message: "Product Updated SuccessFully...", data: updateProductId })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -116,16 +116,16 @@ exports.deleteProductById = async (req, res) => {
         let deleteProductId = await product.findById(id)
 
         if (!deleteProductId) {
-            return res.status(404).json({ status: 404, message: "Product Not Found" });
+            return res.status(404).json({ status: 404, success: false, message: "Product Not Found" });
         }
 
         await product.findByIdAndDelete(id)
 
-        return res.status(200).json({ status: 200, message: "Product Delete SuccessFully..." });
+        return res.status(200).json({ status: 200, success: true, message: "Product Delete SuccessFully..." });
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -136,13 +136,13 @@ exports.getProductByCategory = async (req, res) => {
         let checkProduct = await product.find({ categoryId: id })
 
         if (!checkProduct) {
-            return res.status(404).json({ status: 404, message: "Product Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "Product Not Found" })
         }
 
-        return res.status(200).json({ status: 200, message: "Product Found SuccessFully...", product: checkProduct })
-        
+        return res.status(200).json({ status: 200, success: true, message: "Product Found SuccessFully...", data: checkProduct })
+
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }

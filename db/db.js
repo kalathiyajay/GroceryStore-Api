@@ -7,6 +7,6 @@ exports.connectDB = async () => {
             .then(() => console.log("DB Is Connected"))
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }

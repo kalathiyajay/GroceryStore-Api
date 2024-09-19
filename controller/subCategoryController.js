@@ -7,11 +7,11 @@ exports.createSubCategory = async (req, res) => {
         let existSubCategory = await subCategory.findOne({ categoryId, subCategoryName })
 
         if (existSubCategory) {
-            return res.status(409).json({ status: 409, message: "SubCategory Already Added..." })
+            return res.status(409).json({ status: 409, success: false, message: "SubCategory Already Added..." })
         }
 
         if (!req.file) {
-            return res.status(401).json({ status: 401, message: "Sub Category Image is Required" })
+            return res.status(401).json({ status: 401, success: false, message: "Sub Category Image is Required" })
         }
 
         existSubCategory = await subCategory.create({
@@ -20,11 +20,11 @@ exports.createSubCategory = async (req, res) => {
             subCategoryImage: req.file.path
         });
 
-        return res.status(201).json({ status: 201, message: "SubCategory Create SuccessFully...", subCategory: existSubCategory })
+        return res.status(201).json({ status: 201, success: true, message: "SubCategory Create SuccessFully...", data: existSubCategory })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -34,7 +34,7 @@ exports.getAllSubCategory = async (req, res) => {
         let pageSize = parseInt(req.query.pageSize)
 
         if (page < 1 || pageSize < 1) {
-            return res.status(401).json({ status: 401, message: "Page And PageSize Cann't Be Less Than 1" })
+            return res.status(401).json({ status: 401, success: false, message: "Page And PageSize Cann't Be Less Than 1" })
         }
 
         let paginatedSubCategory;
@@ -44,7 +44,7 @@ exports.getAllSubCategory = async (req, res) => {
         let count = paginatedSubCategory.length
 
         if (count === 0) {
-            return res.status(404).json({ status: 404, message: "Sub Category Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "Sub Category Not Found" })
         }
 
         if (page && pageSize) {
@@ -53,11 +53,11 @@ exports.getAllSubCategory = async (req, res) => {
             paginatedSubCategory = await paginatedSubCategory.slice(startIndex, lastIndex)
         }
 
-        return res.status(200).json({ status: 200, totalSubCategory: count, message: "All Sub Category Found SuccessFully...", subCategory: paginatedSubCategory })
+        return res.status(200).json({ status: 200, success: true, totalSubCategory: count, message: "All Sub Category Found SuccessFully...", data: paginatedSubCategory })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -68,14 +68,14 @@ exports.getSubCategoryById = async (req, res) => {
         let getSubCategoryId = await subCategory.findById(id)
 
         if (!getSubCategoryId) {
-            return res.status(404).json({ status: 404, message: "Sub Category Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "Sub Category Not Found" })
         }
 
-        return res.status(200).json({ status: 200, message: "Sub Category Found SuccessFully...", subCategory: getSubCategoryId });
+        return res.status(200).json({ status: 200, success: true, message: "Sub Category Found SuccessFully...", data: getSubCategoryId });
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -86,7 +86,7 @@ exports.updateSubCategoryById = async (req, res) => {
         let updateSubCategoryId = await subCategory.findById(id)
 
         if (!updateSubCategoryId) {
-            return res.status(404).json({ status: 404, message: "Sub Category Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "Sub Category Not Found" })
         }
 
         if (req.file) {
@@ -95,11 +95,11 @@ exports.updateSubCategoryById = async (req, res) => {
 
         updateSubCategoryId = await subCategory.findByIdAndUpdate(id, { ...req.body }, { new: true });
 
-        return res.status(200).json({ status: 200, message: "Sub Category Updated SuccesssFully...", subCategory: updateSubCategoryId })
+        return res.status(200).json({ status: 200, success: true, message: "Sub Category Updated SuccesssFully...", data: updateSubCategoryId })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
 
@@ -110,15 +110,15 @@ exports.deleteSubCategoryById = async (req, res) => {
         let deleteSubCategoryId = await subCategory.findById(id)
 
         if (!deleteSubCategoryId) {
-            return res.status(404).json({ status: 404, message: "Sub Category Not Found" })
+            return res.status(404).json({ status: 404, success: false, message: "Sub Category Not Found" })
         }
 
         await subCategory.findByIdAndDelete(id)
 
-        return res.status(200).json({ status: 200, message: "Sub Category Delete SuccessFully..." })
+        return res.status(200).json({ status: 200, success: true, message: "Sub Category Delete SuccessFully..." })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ status: 500, message: error.message })
+        return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
