@@ -26,6 +26,9 @@ const userSchema = mongoose.Schema({
         type: String,
         require: true
     },
+    otp: {
+        type: Number
+    },
     role: {
         type: String,
         enum: ["admin", "user"]

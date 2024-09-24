@@ -295,3 +295,87 @@ exports.verifyOtp = async (req, res) => {
         return res.status(500).json({ status: 500, success: false, message: error.message })
     }
 }
+
+exports.generateOtp = async (req, res) => {
+    try {
+        let { mobileNo } = req.body
+
+        if (!mobileNo) {
+            return res.status(404).json({ status: 404, message: "Mobile No Is Required" })
+        }
+
+        let checkMobileNo = await user.findOne({ mobileNo })
+
+        if (!checkMobileNo) {
+            checkMobileNo = await user.create({
+                mobileNo
+            });
+        }
+        let otp = Math.floor(10000 * Math.random(10000))
+        checkMobileNo.otp = otp
+        console.log(otp);
+        checkMobileNo.save();
+
+        return res.status(200).json({ status: 200, message: "Otp Sent SuccessFully...", otp: checkMobileNo })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}
+
+exports.verifyGenerateOtp = async (req, res) => {
+    try {
+        let { mobileNo, otp } = req.body
+
+        let checkMobileNoIsExist = await user.findOne({ mobileNo })
+
+        if (!checkMobileNoIsExist) {
+            return res.status(404).json({ status: 404, message: "Mobile No Not Found" })
+        }
+
+        if (checkMobileNoIsExist.otp !== otp) {
+            return res.status(404).json({ status: 404, message: "Otp Not Match" })
+        }
+
+        let token = await jwt.sign({ _id: checkMobileNoIsExist._id }, process.env.SECRET_KEY);
+
+        checkMobileNoIsExist.otp = undefined;
+
+        checkMobileNoIsExist.save();
+        return res.status(200).json({ status: 200, message: "Otp Verify SuccessFully...", user: checkMobileNoIsExist, token: token })
+
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500)
+    }
+}
+
+exports.resentOtp = async (req, res) => {
+    try {
+        let { mobileNo } = req.body
+
+        if (!mobileNo) {
+            return res.status(404).json({ status: 404, message: "Mobile No Is Required" })
+        }
+
+        let checkMobileNo = await user.findOne({ mobileNo })
+
+        if (!checkMobileNo) {
+            return res.status(404).json({ status: 404, message: "Mobile No Not Found" })
+        }
+
+        let otp = Math.floor(10000 * Math.random(1000));
+        console.log(otp);
+
+        checkMobileNo.otp = otp
+
+        checkMobileNo.save();
+
+        return res.status(200).json({ status: 200, message: "Otp Sent SuccessFully..." });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: 500, message: error.message })
+    }
+}

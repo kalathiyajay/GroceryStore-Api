@@ -1,5 +1,5 @@
 const express = require('express');
-const { createAdminUser, createUser, getAllUsers, getUserById, updateUserById, deleteUserById, dashBoard, loginWithMobileNo, verifyOtp } = require('../controller/userController');
+const { createAdminUser, createUser, getAllUsers, getUserById, updateUserById, deleteUserById, dashBoard, loginWithMobileNo, verifyOtp, generateOtp, verifyGenerateOtp, resentOtp } = require('../controller/userController');
 const upload = require('../helper/imageUplode');
 const { createCategory, getAllCategories, getCategoryById, updateCategoryById, deleteCategoryById } = require('../controller/categoryController');
 const { createSubCategory, getAllSubCategory, getSubCategoryById, updateSubCategoryById, deleteSubCategoryById } = require('../controller/subCategoryController');
@@ -121,4 +121,8 @@ indexRoutes.delete('/deleteSpecialDeal/:id', deleteSpecialDealById);
 indexRoutes.post('/mobileNoLogin', loginWithMobileNo);
 indexRoutes.post('/verifyOtp', verifyOtp);
 
+
+indexRoutes.post('/generateOtp', generateOtp);
+indexRoutes.post('/verifyGenereOtp', verifyGenerateOtp);
+indexRoutes.post('/resentOtp', resentOtp);
 module.exports = indexRoutes;   
